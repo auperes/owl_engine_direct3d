@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shader Files">
+      <UniqueIdentifier>{9c37a391-9a23-4de8-bda3-60e7124e4f4a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -107,5 +110,13 @@
     <None Include="DXTrace.inl">
       <Filter>Header Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="vertex_passthrough.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
+    <FxCompile Include="pixel_passthrough.hlsl">
+      <Filter>Shader Files</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>
