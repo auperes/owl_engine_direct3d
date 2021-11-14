@@ -71,7 +71,7 @@ namespace owl
 		void end_frame();
 		void clear_buffer(float red, float green, float blue) noexcept;
 
-		void draw_triangle(float angle);
+		void draw_triangle(float angle, float x, float y);
 
 	private:
 #ifndef NDEBUG

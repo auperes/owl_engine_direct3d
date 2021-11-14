@@ -3,10 +3,12 @@
 #include <sstream>
 
 #include <d3dcompiler.h>
+#include <DirectXMath.h>
 
 #include "dxerr.h"
 
 namespace wrl = Microsoft::WRL;
+namespace dx = DirectX;
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
@@ -101,7 +103,7 @@ namespace owl
 		context->ClearRenderTargetView(render_target_view.Get(), color);
 	}
 
-	void graphics::draw_triangle(float angle)
+	void graphics::draw_triangle(float angle, float x, float y)
 	{
 		HRESULT handle_result;
 
@@ -175,19 +177,17 @@ namespace owl
 
 		struct constant_data
 		{
-			struct
-			{
-				float matrix[4][4];
-			} transformation;
+			dx::XMMATRIX transformation;
 		};
 
 		const constant_data constant_data =
 		{
 			{
-				(3.0f / 4.0f) * std::cos(angle),	(3.0f / 4.0f) * -std::sin(angle),	0.0f,	0.0f,
-				std::sin(angle),					std::cos(angle),					0.0f,	0.0f,
-				0.0f,								0.0f,								1.0f,	0.0f,
-				0.0f,								0.0f,								0.0f,	1.0f,
+				dx::XMMatrixTranspose(
+					dx::XMMatrixRotationZ(angle) *
+					dx::XMMatrixScaling(3.0F / 4.0F, 1.0F, 1.0F) *
+					dx::XMMatrixTranslation(x, y, 0.0F)
+				)
 			}
 		};
 
