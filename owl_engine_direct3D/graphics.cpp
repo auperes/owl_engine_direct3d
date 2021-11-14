@@ -107,35 +107,71 @@ namespace owl
 
 		struct Vertex
 		{
-			float x;
-			float y;
+			struct {
+				float x;
+				float y;
+			} position;
+			struct {
+				unsigned char r;
+				unsigned char g;
+				unsigned char b;
+				unsigned char a;
+			} color;
 		};
 
-		const Vertex vertices[] =
+		Vertex vertices[] =
 		{
-			{ 0.0F, 0.5F },
-			{ 0.5F, -0.5F },
-			{ -0.5F, -0.5F }
+			{ 0.0f, 0.5f, 255, 0, 0, 0 },
+			{ 0.5f, -0.5f, 0, 255, 0, 0 },
+			{ -0.5f, -0.5f, 0, 0, 255, 0 },
+			{ -0.3f, 0.3f, 0, 255, 0, 0 },
+			{ 0.3f, 0.3f, 0, 0, 255, 0 },
+			{ 0.0f, -0.8f, 255, 0, 0, 0 },
 		};
+		vertices[0].color.g = 255;
 
 		wrl::ComPtr<ID3D11Buffer> vertex_buffer;
-		D3D11_BUFFER_DESC buffer_descriptor = {};
-		buffer_descriptor.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		buffer_descriptor.Usage = D3D11_USAGE_DEFAULT;
-		buffer_descriptor.CPUAccessFlags = 0U;
-		buffer_descriptor.MiscFlags = 0U;
-		buffer_descriptor.ByteWidth = sizeof(vertices);
-		buffer_descriptor.StructureByteStride = sizeof(Vertex);
+		D3D11_BUFFER_DESC vertex_buffer_descriptor = {};
+		vertex_buffer_descriptor.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+		vertex_buffer_descriptor.Usage = D3D11_USAGE_DEFAULT;
+		vertex_buffer_descriptor.CPUAccessFlags = 0U;
+		vertex_buffer_descriptor.MiscFlags = 0U;
+		vertex_buffer_descriptor.ByteWidth = sizeof(vertices);
+		vertex_buffer_descriptor.StructureByteStride = sizeof(Vertex);
 
-		D3D11_SUBRESOURCE_DATA subresource_data = {};
-		subresource_data.pSysMem = vertices;
+		D3D11_SUBRESOURCE_DATA vertex_subresource_data = {};
+		vertex_subresource_data.pSysMem = vertices;
 
-		GRAPHICS_THROW_INFO(device->CreateBuffer(&buffer_descriptor, &subresource_data, &vertex_buffer));
+		GRAPHICS_THROW_INFO(device->CreateBuffer(&vertex_buffer_descriptor, &vertex_subresource_data, &vertex_buffer));
 
 		const UINT stride = sizeof(Vertex);
 		const UINT offset = 0U;
 
 		context->IASetVertexBuffers(0U, 1U, vertex_buffer.GetAddressOf(), &stride, &offset);
+
+		const unsigned short indices[] =
+		{
+			0, 1, 2,
+			0, 2, 3,
+			0, 4, 1,
+			2, 1, 5
+		};
+
+		wrl::ComPtr<ID3D11Buffer> index_buffer;
+		D3D11_BUFFER_DESC index_buffer_descriptor = {};
+		index_buffer_descriptor.BindFlags = D3D11_BIND_INDEX_BUFFER;
+		index_buffer_descriptor.Usage = D3D11_USAGE_DEFAULT;
+		index_buffer_descriptor.CPUAccessFlags = 0U;
+		index_buffer_descriptor.MiscFlags = 0U;
+		index_buffer_descriptor.ByteWidth = sizeof(indices);
+		index_buffer_descriptor.StructureByteStride = sizeof(unsigned short);
+
+		D3D11_SUBRESOURCE_DATA index_subresource_data = {};
+		index_subresource_data.pSysMem = indices;
+
+		GRAPHICS_THROW_INFO(device->CreateBuffer(&index_buffer_descriptor, &index_subresource_data, &index_buffer));
+
+		context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R16_UINT, 0U);
 
 		wrl::ComPtr<ID3D11PixelShader> pixel_shader;
 		wrl::ComPtr<ID3DBlob> blob;
@@ -153,7 +189,8 @@ namespace owl
 		wrl::ComPtr<ID3D11InputLayout> input_layout;
 		const D3D11_INPUT_ELEMENT_DESC input_element_descriptors[] =
 		{
-			{ "POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 }
+			{ "Position", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 },
+			{ "Color", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 8U, D3D11_INPUT_PER_VERTEX_DATA, 0 }
 		};
 
 		GRAPHICS_THROW_INFO(device->CreateInputLayout(
@@ -176,7 +213,7 @@ namespace owl
 		viewport.TopLeftY = 0;
 		context->RSSetViewports(1U, &viewport);
 
-		GRAPHICS_THROW_INFO_ONLY(context->Draw(static_cast<UINT>(std::size(vertices)), 0U));
+		GRAPHICS_THROW_INFO_ONLY(context->DrawIndexed(static_cast<UINT>(std::size(indices)), 0U, 0U));
 	}
 
 	graphics::handle_result_exception::handle_result_exception(int line, const char* file, HRESULT handle_result, std::vector<std::string> information_messages) noexcept
