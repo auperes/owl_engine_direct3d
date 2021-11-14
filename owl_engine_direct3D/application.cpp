@@ -30,7 +30,7 @@ namespace owl
 	{
 		const float color = ::sin(timer.peek()) / 2.0F + 0.5F;
 		window.get_graphics().clear_buffer(color, color, 1.0F);
-		window.get_graphics().draw_triangle();
+		window.get_graphics().draw_triangle(timer.peek());
 		window.get_graphics().end_frame();
 	}
 }

@@ -101,7 +101,7 @@ namespace owl
 		context->ClearRenderTargetView(render_target_view.Get(), color);
 	}
 
-	void graphics::draw_triangle()
+	void graphics::draw_triangle(float angle)
 	{
 		HRESULT handle_result;
 
@@ -121,12 +121,12 @@ namespace owl
 
 		Vertex vertices[] =
 		{
-			{ 0.0f, 0.5f, 255, 0, 0, 0 },
-			{ 0.5f, -0.5f, 0, 255, 0, 0 },
-			{ -0.5f, -0.5f, 0, 0, 255, 0 },
-			{ -0.3f, 0.3f, 0, 255, 0, 0 },
-			{ 0.3f, 0.3f, 0, 0, 255, 0 },
-			{ 0.0f, -0.8f, 255, 0, 0, 0 },
+			{ 0.0F, 0.5F, 255, 0, 0, 0 },
+			{ 0.5F, -0.5F, 0, 255, 0, 0 },
+			{ -0.5F, -0.5F, 0, 0, 255, 0 },
+			{ -0.3F, 0.3F, 0, 255, 0, 0 },
+			{ 0.3F, 0.3F, 0, 0, 255, 0 },
+			{ 0.0F, -1.0F, 255, 0, 0, 0 },
 		};
 		vertices[0].color.g = 255;
 
@@ -172,6 +172,40 @@ namespace owl
 		GRAPHICS_THROW_INFO(device->CreateBuffer(&index_buffer_descriptor, &index_subresource_data, &index_buffer));
 
 		context->IASetIndexBuffer(index_buffer.Get(), DXGI_FORMAT_R16_UINT, 0U);
+
+		struct constant_data
+		{
+			struct
+			{
+				float matrix[4][4];
+			} transformation;
+		};
+
+		const constant_data constant_data =
+		{
+			{
+				(3.0f / 4.0f) * std::cos(angle),	(3.0f / 4.0f) * -std::sin(angle),	0.0f,	0.0f,
+				std::sin(angle),					std::cos(angle),					0.0f,	0.0f,
+				0.0f,								0.0f,								1.0f,	0.0f,
+				0.0f,								0.0f,								0.0f,	1.0f,
+			}
+		};
+
+		wrl::ComPtr<ID3D11Buffer> constant_buffer;
+		D3D11_BUFFER_DESC constant_buffer_descriptor = {};
+		constant_buffer_descriptor.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+		constant_buffer_descriptor.Usage = D3D11_USAGE_DYNAMIC;
+		constant_buffer_descriptor.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+		constant_buffer_descriptor.MiscFlags = 0U;
+		constant_buffer_descriptor.ByteWidth = sizeof(constant_data);
+		constant_buffer_descriptor.StructureByteStride = 0U;
+
+		D3D11_SUBRESOURCE_DATA constant_subresource_data = {};
+		constant_subresource_data.pSysMem = &constant_data;
+
+		GRAPHICS_THROW_INFO(device->CreateBuffer(&constant_buffer_descriptor, &constant_subresource_data, &constant_buffer));
+
+		context->VSSetConstantBuffers(0U, 1U, constant_buffer.GetAddressOf());
 
 		wrl::ComPtr<ID3D11PixelShader> pixel_shader;
 		wrl::ComPtr<ID3DBlob> blob;
