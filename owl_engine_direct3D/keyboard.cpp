@@ -7,7 +7,7 @@ namespace owl
 		return key_states[key_code];
 	}
 
-	keyboard::event keyboard::read_key() noexcept
+	std::optional<keyboard::event> keyboard::read_key() noexcept
 	{
 		if (key_buffer.size() > 0U)
 		{
@@ -15,8 +15,8 @@ namespace owl
 			key_buffer.pop();
 			return e;
 		}
-		else
-			return keyboard::event();
+		
+		return {};
 	}
 
 	bool keyboard::is_key_empty() const noexcept
@@ -29,7 +29,7 @@ namespace owl
 		key_buffer = std::queue<keyboard::event>();
 	}
 
-	char keyboard::read_char() noexcept
+	std::optional<char> keyboard::read_char() noexcept
 	{
 		if (char_buffer.size() > 0U)
 		{
@@ -37,8 +37,8 @@ namespace owl
 			char_buffer.pop();
 			return char_code;
 		}
-		else
-			return 0;
+		
+		return {};
 	}
 
 	bool keyboard::is_char_empty() const noexcept

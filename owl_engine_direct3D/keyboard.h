@@ -1,7 +1,8 @@
 #pragma once
 
-#include <queue>
 #include <bitset>
+#include <optional>
+#include <queue>
 
 namespace owl
 {
@@ -16,16 +17,13 @@ namespace owl
 			enum class type
 			{
 				Press,
-				Release,
-				Invalid
+				Release
 			};
 
-			event() : type(type::Invalid), code(0u) {}
 			event(type type, unsigned char code) noexcept : type(type), code(code) {}
 
 			bool is_pressed() const noexcept { return type == type::Press; }
 			bool is_released() const noexcept { return type == type::Release; }
-			bool is_valid() const noexcept { return type != type::Invalid; }
 			unsigned char get_code() const noexcept { return code; }
 
 		private:
@@ -39,11 +37,11 @@ namespace owl
 		keyboard& operator=(const keyboard&) = delete;
 
 		bool is_key_pressed(unsigned char key_code) const noexcept;
-		event read_key() noexcept;
+		std::optional<event> read_key() noexcept;
 		bool is_key_empty() const noexcept;
 		void flush_key() noexcept;
 
-		char read_char() noexcept;
+		std::optional<char> read_char() noexcept;
 		bool is_char_empty() const noexcept;
 		void flush_char() noexcept;
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <queue>
 
 namespace owl
@@ -23,10 +24,8 @@ namespace owl
 				Move,
 				Enter,
 				Leave,
-				Invalid,
 			};
 
-			event() noexcept = default;
 			event(type type, const mouse& parent) noexcept
 				: type(type)
 				, is_left_pressed(parent.is_left_pressed)
@@ -35,7 +34,6 @@ namespace owl
 				, y(parent.y)
 			{}
 
-			bool is_valid() const noexcept { return type != type::Invalid; }
 			type get_type() const noexcept { return type; }
 			std::pair<int, int> get_position() const noexcept { return std::make_pair(x, y); }
 			int get_position_x() const noexcept { return x; }
@@ -44,12 +42,11 @@ namespace owl
 			bool is_right_button_pressed() const noexcept { return is_right_pressed; }
 
 		private:
-			type type = type::Invalid;
+			type type;
 			bool is_left_pressed = false;
 			bool is_right_pressed = false;
 			int x = 0;
 			int y = 0;
-
 		};
 
 		mouse() = default;
@@ -64,7 +61,7 @@ namespace owl
 		bool is_inside_window() const noexcept { return is_in_window; }
 		bool is_empty() const noexcept { return event_buffer.empty(); }
 
-		mouse::event read() noexcept;
+		std::optional<mouse::event> read() noexcept;
 		void flush() noexcept;
 
 	private:

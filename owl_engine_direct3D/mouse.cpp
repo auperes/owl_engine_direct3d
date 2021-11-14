@@ -4,7 +4,7 @@
 
 namespace owl
 {
-	mouse::event mouse::read() noexcept
+	std::optional<mouse::event> mouse::read() noexcept
 	{
 		if (event_buffer.size() > 0U)
 		{
@@ -12,8 +12,8 @@ namespace owl
 			event_buffer.pop();
 			return e;
 		}
-		else
-			return mouse::event();
+		
+		return {};
 	}
 
 	void mouse::flush() noexcept
