@@ -1,6 +1,7 @@
 .vs
 [Dd]ebug/
 [Rr]elease/
+out/
 
 *.dll
 *.pdb

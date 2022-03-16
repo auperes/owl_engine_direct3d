@@ -209,13 +209,13 @@ namespace owl
 
 		wrl::ComPtr<ID3D11PixelShader> pixel_shader;
 		wrl::ComPtr<ID3DBlob> blob;
-		GRAPHICS_THROW_INFO(D3DReadFileToBlob(L"../x64/Debug/pixel_passthrough.cso", &blob));
+		GRAPHICS_THROW_INFO(D3DReadFileToBlob(L"pixel_passthrough.cso", &blob));
 		GRAPHICS_THROW_INFO(device->CreatePixelShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &pixel_shader));
 
 		context->PSSetShader(pixel_shader.Get(), nullptr, 0U);
 
 		wrl::ComPtr<ID3D11VertexShader> vertex_shader;
-		GRAPHICS_THROW_INFO(D3DReadFileToBlob(L"../x64/Debug/vertex_passthrough.cso", &blob));
+		GRAPHICS_THROW_INFO(D3DReadFileToBlob(L"vertex_passthrough.cso", &blob));
 		GRAPHICS_THROW_INFO(device->CreateVertexShader(blob->GetBufferPointer(), blob->GetBufferSize(), nullptr, &vertex_shader));
 
 		context->VSSetShader(vertex_shader.Get(), nullptr, 0U);
